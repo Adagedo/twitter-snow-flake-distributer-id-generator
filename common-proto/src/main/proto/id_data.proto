@@ -1,0 +1,23 @@
+syntax = "proto3";
+// Use an underscore or remove the dash entirely
+package com.adagedo.common_proto;
+
+// Explicitly tell the generator what Java package name to write safely
+option java_multiple_files = true;
+option java_package = "code.adagedo.commonproto";
+option java_outer_classname = "ComputeIdProto";
+
+
+message ServerInfoRequest {
+  string data_center_id = 1;
+  string server_id = 2;
+}
+
+message ServerResponse{
+  int64 snow_flake_id = 1;
+}
+
+
+service ComputeId{
+  rpc GenerateId(ServerInfoRequest) returns (ServerResponse);
+}
