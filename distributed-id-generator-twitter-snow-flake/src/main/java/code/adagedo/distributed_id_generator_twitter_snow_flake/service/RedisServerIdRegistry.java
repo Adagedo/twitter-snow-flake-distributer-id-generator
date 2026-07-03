@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +24,9 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
 
     private static final int LEASE_TTL_MINUTES = 2;
 
-    private String serverName;
-
     private String datacenterName;
+
+    private final Map<String, Long> activeServers = new ConcurrentHashMap<>();
 
     @Getter
     private long datacenterId = -1;
@@ -36,11 +38,8 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
     @PostConstruct
     public void register() {
         String KEY = "snowflake:datacenter";
-
         try{
              this.datacenterId = redisKeyValueService.getDataCenterId(KEY, datacenterName);
-             this.serverId = claimServerSlot(datacenterId, serverName);
-
         }catch (Exception e) {
             log.error("Failed to register Snowflake node. Halting context : {}.", e.getCause().getMessage());
             throw new IllegalStateException("Snowflake node registration failed", e);
@@ -48,14 +47,20 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
     }
 
     @Override
-    public long claimServerSlot(long datacenterId, String serverName) {
+    public long createServerId(String serverName) {
+
+        if(activeServers.containsKey(serverName)) return activeServers.get(serverName);
 
         for (long slot = 0; slot < MAX_SIZE; slot++){
 
-            String key = String.format("snowflake:dc:%d:worker:%d", datacenterId, slot);
+            String key = String.format("snowflake:datacenter:%d:worker:%d", datacenterId, slot);
             Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, serverName, Duration.ofMinutes(LEASE_TTL_MINUTES));
 
-            if(Boolean.TRUE.equals(acquired)) return slot;
+            if(Boolean.TRUE.equals(acquired)) {
+                activeServers.put(serverName,  slot);
+                log.info("Successfully bound server '{}' to Worker ID slot {}", serverName, slot);
+                return slot;
+            }
         }
         throw new IllegalStateException("Out of worker ID slots! All 32 positions inside datacenter " + datacenterId + " are occupied.");
     }
@@ -64,14 +69,15 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
     @Scheduled(fixedRate = 30000)
     public void renewLease() {
 
-        if (this.serverId != -1){
-            String key = buildKey(this.datacenterId, this.serverId);
+        activeServers.forEach((serverName, serverId) -> {
+            String key = buildKey(this.datacenterId, serverId);
             Boolean extend = redisTemplate.expire(key, Duration.ofMinutes(LEASE_TTL_MINUTES));
             if(Boolean.FALSE.equals(extend)){
                 log.warn("Lease expired unexpectedly for key: {}. Re-acquiring slot...", key);
                 redisTemplate.opsForValue().set(key, serverName, Duration.ofMinutes(LEASE_TTL_MINUTES));
             }
-        }
+
+        });
     }
 
     private String buildKey(long datacenterId, long serverId){
