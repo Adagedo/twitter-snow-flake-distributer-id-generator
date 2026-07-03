@@ -59,13 +59,12 @@ public class IdGeneratorEngine {
                 TIMESTAMP_LEFT_SHIFT, DATACENTER_ID_BITS, WORKER_ID_BITS, SEQUENCE_BITS, serverId);
     }
 
-    public boolean validUserService(String serviceName){
-        if(serviceName == null) return false;
-        return AGENT_PATTERN.matcher(serviceName).matches();
+    public boolean validUserService(){
+        if(serverName == null) return false;
+        return AGENT_PATTERN.matcher(serverName).matches() && AGENT_PATTERN.matcher(datacenterName).matches();
     }
 
-    @PostConstruct
-    void publishAudit(){
+    public void publishAudit(){
         // logic
     }
 

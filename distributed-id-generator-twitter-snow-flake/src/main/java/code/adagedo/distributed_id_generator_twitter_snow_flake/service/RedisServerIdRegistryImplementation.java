@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RedisServerIdRegistryImplementation implements ServerIdRegistry{
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
 
     private static final long MAX_SIZE = 32;
     private static final int LEASE_TTL_MINUTES = 2;

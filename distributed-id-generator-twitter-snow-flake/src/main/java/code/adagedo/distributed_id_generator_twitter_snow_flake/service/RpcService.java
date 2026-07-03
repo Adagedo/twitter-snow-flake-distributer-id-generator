@@ -23,6 +23,7 @@ public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
             long serverId = redisServerIdRegistry.createServerId(request.getServerName());
             IdGeneratorEngine engine = new IdGeneratorEngine(serverId, datacenterId, request.getServerName(), request.getDatacenterName());
             long snowFlakeId = engine.nextId();
+            engine.publishAudit(); // sending audits to Kafka topic
             ServerResponse response = ServerResponse.newBuilder().setSnowFlakeId(snowFlakeId).build();
             observer.onNext(response);
             observer.onCompleted();

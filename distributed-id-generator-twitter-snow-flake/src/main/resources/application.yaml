@@ -1,3 +1,18 @@
 spring:
   application:
     name: distributed-id-generator-twitter-snow-flake
+  data:
+    redis:
+      host: redis
+      port: 6379
+      timeout: 60000ms
+      jedis:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+
+
+server:
+  port: 8090
