@@ -27,7 +27,7 @@ public class IdGeneratorEngine {
 
     private static final Pattern AGENT_PATTERN = Pattern.compile("^([a-zA-Z][a-zA-Z\\-0-9]*)$");
 
-    private final long servverId;
+    private final long serverId;
     private final long datacenterId;
     private final Random rand;
 
@@ -39,18 +39,18 @@ public class IdGeneratorEngine {
         this(servverId, datacenterId,0L);
     }
 
-    public IdGeneratorEngine(long servverId, long datacenterId, long sequence){
-        this.servverId = servverId;
+    public IdGeneratorEngine(long serverId, long datacenterId, long sequence){
+        this.serverId = serverId;
         this.datacenterId = datacenterId;
         this.rand = new Random();
         this.sequence = sequence;
 
-        if(servverId > MAX_WORKER_ID || servverId < 0) throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
+        if(serverId > MAX_WORKER_ID || serverId < 0) throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
 
         if(datacenterId > MAX_DATACENTER_ID || datacenterId < 0) throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", MAX_DATACENTER_ID));
 
         log.info("engine starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, workerid {}",
-                TIMESTAMP_LEFT_SHIFT, DATACENTER_ID_BITS, WORKER_ID_BITS, SEQUENCE_BITS, servverId);
+                TIMESTAMP_LEFT_SHIFT, DATACENTER_ID_BITS, WORKER_ID_BITS, SEQUENCE_BITS, serverId);
     }
 
     public boolean validUserService(String serviceName){
@@ -69,7 +69,7 @@ public class IdGeneratorEngine {
         return nextId();
     }
 
-    public long get_worker_id(){ return servverId; }
+    public long get_worker_id(){ return serverId; }
 
     public long get_datacenter_id() { return datacenterId; }
 
@@ -102,7 +102,7 @@ public class IdGeneratorEngine {
 
         return ((timestamp - TWITTER_EPOCH) << TIMESTAMP_LEFT_SHIFT) |
                 (datacenterId << DATACENTER_ID_SHIFT) |
-                (servverId << WORKER_ID_SHIFT) |
+                (serverId << WORKER_ID_SHIFT) |
                 sequence;
     }
 
