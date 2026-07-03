@@ -16,36 +16,30 @@
 
     <properties>
         <java.version>21</java.version>
-        <!-- Standardizing gRPC version across all components for runtime safety -->
         <grpc.version>1.65.1</grpc.version>
     </properties>
 
     <dependencies>
-        <!-- Core gRPC Network Transport Component -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
             <version>${grpc.version}</version>
         </dependency>
-        <!-- gRPC Protobuf binding support -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
             <version>${grpc.version}</version>
         </dependency>
-        <!-- gRPC Client and Server Stub Generation Library -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
             <version>${grpc.version}</version>
         </dependency>
-        <!-- Native Google Protobuf Java utility bindings -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>4.28.2</version>
         </dependency>
-        <!-- Required runtime annotation helper for modern Java environments -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -60,7 +54,6 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <!-- UPGRADED TO 3.25.5 FOR COMPATIBILITY WITH PROTOBUF-JAVA 4.x -->
                     <protocArtifact>com.google.protobuf:protoc:3.25.5:exe:windows-x86_64</protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:windows-x86_64</pluginArtifact>

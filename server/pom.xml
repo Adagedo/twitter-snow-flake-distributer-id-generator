@@ -19,30 +19,25 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot gRPC Client Framework Integration -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-grpc-client</artifactId>
         </dependency>
-        <!-- Standard Spring Boot Web MVC components -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
-        <!-- Shared compiled gRPC definitions dependency -->
         <dependency>
             <groupId>code.adagedo</groupId>
             <artifactId>common-proto</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- Lombok runtime utility framework -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-grpc-client-test</artifactId>
@@ -57,7 +52,6 @@
 
     <build>
         <plugins>
-            <!-- Spring Boot lifecycle runtime packaging executor plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -71,7 +65,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Standard Java Compiler configuration managing Lombok paths -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

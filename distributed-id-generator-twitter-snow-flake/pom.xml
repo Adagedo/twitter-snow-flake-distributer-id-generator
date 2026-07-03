@@ -22,17 +22,14 @@
 	</properties>
 
 	<dependencies>
-		<!-- Standard Spring Boot Web MVC components -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
-		<!-- Official gRPC service utilities and health checks -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-services</artifactId>
 		</dependency>
-		<!-- Spring official gRPC Server auto-configuration starter integration -->
 		<dependency>
 			<groupId>org.springframework.grpc</groupId>
 			<artifactId>spring-grpc-server-web-spring-boot-starter</artifactId>
@@ -42,20 +39,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-		<!-- Shared dependency holding prebuilt gRPC stub classes -->
 		<dependency>
 			<groupId>code.adagedo</groupId>
 			<artifactId>common-proto</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- Lombok optimization compilation layer -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 
-		<!-- TEST TOOLS -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
@@ -82,7 +76,6 @@
 
 	<build>
 		<plugins>
-			<!-- Spring Boot lifecycle runtime packaging executor plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -96,7 +89,6 @@
 				</configuration>
 			</plugin>
 
-			<!-- Standard Java Compiler engine mapping Lombok processor paths -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
