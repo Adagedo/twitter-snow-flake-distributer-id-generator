@@ -15,7 +15,7 @@ import org.springframework.grpc.server.service.GrpcService;
 @RequiredArgsConstructor
 public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
 
-    private final RedisServerIdRegistry redisServerIdRegistry;
+    private final RedisServerIdRegistryImplementation redisServerIdRegistry;
     public void generateId(ServerInfoRequest request, StreamObserver<code.adagedo.commonproto.ServerResponse> observer){
 
         try{

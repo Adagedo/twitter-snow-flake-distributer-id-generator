@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RedisServerIdRegistry implements ServerIdRegistry{
+public class RedisServerIdRegistryImplementation implements ServerIdRegistry{
 
     private final RedisTemplate<String, Object> redisTemplate;
 
