@@ -30,8 +30,6 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
 
     @Getter
     private long datacenterId = -1;
-    @Getter
-    private long serverId = -1;
 
 
     @Override
@@ -52,7 +50,6 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
         if(activeServers.containsKey(serverName)) return activeServers.get(serverName);
 
         for (long slot = 0; slot < MAX_SIZE; slot++){
-
             String key = String.format("snowflake:datacenter:%d:worker:%d", datacenterId, slot);
             Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, serverName, Duration.ofMinutes(LEASE_TTL_MINUTES));
 
@@ -76,7 +73,6 @@ public class RedisServerIdRegistry implements ServerIdRegistry{
                 log.warn("Lease expired unexpectedly for key: {}. Re-acquiring slot...", key);
                 redisTemplate.opsForValue().set(key, serverName, Duration.ofMinutes(LEASE_TTL_MINUTES));
             }
-
         });
     }
 
