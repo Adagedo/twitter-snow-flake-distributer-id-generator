@@ -14,7 +14,6 @@ public class RedisKeyValueService {
 
     private final RedisTemplate<String, Long> redisTemplate;
 
-
     public void save(){
         String KEY = "snowflake:datacenter";
         if (redisTemplate.hasKey(KEY)){
