@@ -8,7 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="common-proto" />
       </profile>
-      <profile name="Annotation profile for server" enabled="true">
+      <profile name="Annotation profile for distributed-id-generator-twitter-snow-flake" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
