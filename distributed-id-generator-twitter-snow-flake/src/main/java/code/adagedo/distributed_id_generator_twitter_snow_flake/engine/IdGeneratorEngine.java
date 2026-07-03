@@ -2,6 +2,7 @@ package code.adagedo.distributed_id_generator_twitter_snow_flake.engine;
 
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidSystemClockException;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidUserServiceError;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,17 +32,22 @@ public class IdGeneratorEngine {
     private final long datacenterId;
     private final Random rand;
 
+    private final String serverName;
+    private final String datacenterName;
+
     private long sequence;
     private long lastTimestamp = -1L;
 
 
-    public IdGeneratorEngine(long serverId, long datacenterId){
-        this(serverId, datacenterId,0L);
+    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName){
+        this(serverId, datacenterId, datacenterName, serverName,0L);
     }
 
-    public IdGeneratorEngine(long serverId, long datacenterId, long sequence){
+    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, long sequence){
         this.serverId = serverId;
         this.datacenterId = datacenterId;
+        this.serverName = serverName;
+        this.datacenterName = datacenterName;
         this.rand = new Random();
         this.sequence = sequence;
 
@@ -58,18 +64,12 @@ public class IdGeneratorEngine {
         return AGENT_PATTERN.matcher(serviceName).matches();
     }
 
-    public long get_id(String serviceName){
-        if(!validUserService(serviceName)){
-            // metrics logs goes here for now we keep this way
-            throw new InvalidUserServiceError("invalid service name");
-        }
-
-        // sending audit longs to Kafka topics
-
-        return nextId();
+    @PostConstruct
+    void publishAudit(){
+        // logic
     }
 
-    public long get_worker_id(){ return serverId; }
+    public long get_server_id(){ return serverId; }
 
     public long get_datacenter_id() { return datacenterId; }
 

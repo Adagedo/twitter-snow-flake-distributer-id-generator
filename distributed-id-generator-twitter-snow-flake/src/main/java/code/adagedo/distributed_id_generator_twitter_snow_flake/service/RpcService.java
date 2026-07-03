@@ -21,7 +21,7 @@ public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
         try{
             long datacenterId = redisServerIdRegistry.createDatacenterId(request.getDatacenterName());
             long serverId = redisServerIdRegistry.createServerId(request.getServerName());
-            IdGeneratorEngine engine = new IdGeneratorEngine(datacenterId, serverId);
+            IdGeneratorEngine engine = new IdGeneratorEngine(serverId, datacenterId, request.getServerName(), request.getDatacenterName());
             long snowFlakeId = engine.nextId();
             ServerResponse response = ServerResponse.newBuilder().setSnowFlakeId(snowFlakeId).build();
             observer.onNext(response);

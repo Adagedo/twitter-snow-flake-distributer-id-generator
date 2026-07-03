@@ -1,5 +1,6 @@
 package code.adagedo.distributed_id_generator_twitter_snow_flake.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,17 +20,24 @@ public class RedisServerIdRegistryImplementation implements ServerIdRegistry{
     private static final long MAX_SIZE = 32;
     private static final int LEASE_TTL_MINUTES = 2;
 
+    @Getter
+    private String datacenterName;
+    @Getter
+    private String serverName;
+
     private final Map<String, Long> ACTIVE_DATACENTER_SERVERS = new ConcurrentHashMap<>();
 
 
     @Override
     public long createDatacenterId(String datacenterName) {
+        this.datacenterName = datacenterName;
         if(ACTIVE_DATACENTER_SERVERS.containsKey(datacenterName)) return ACTIVE_DATACENTER_SERVERS.get(datacenterName);
         return createIds(datacenterName);
     }
 
     @Override
     public long createServerId(String serverName) {
+        this.serverName = serverName;
         if(ACTIVE_DATACENTER_SERVERS.containsKey(serverName)) return ACTIVE_DATACENTER_SERVERS.get(serverName);
         return createIds(serverName);
     }

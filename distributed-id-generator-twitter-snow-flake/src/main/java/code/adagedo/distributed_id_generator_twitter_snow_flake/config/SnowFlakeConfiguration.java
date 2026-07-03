@@ -8,13 +8,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SnowFlakeConfiguration {
 
-
     @Bean
     public IdGeneratorEngine idGeneratorEngine(RedisServerIdRegistryImplementation redisServerIdRegistry){
 
         return new IdGeneratorEngine(
-                redisServerIdRegistry.getDatacenterId(),
-                redisServerIdRegistry.getServerId()
+                redisServerIdRegistry.createServerId(redisServerIdRegistry.getServerName()),
+                redisServerIdRegistry.createDatacenterId(redisServerIdRegistry.getDatacenterName()),
+                redisServerIdRegistry.getServerName(),
+                redisServerIdRegistry.getDatacenterName()
         );
     }
 }
