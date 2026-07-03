@@ -1,10 +1,10 @@
 package code.adagedo.distributed_id_generator_twitter_snow_flake.engine;
 
+import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidSystemClockException;
+import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidUserServiceError;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -43,8 +43,77 @@ public class IdGeneratorEngine {
         this.workerId = workerId;
         this.datacenterId = datacenterId;
         this.rand = new Random();
+        this.sequence = sequence;
+
+        if(workerId > MAX_WORKER_ID || workerId < 0) throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
+
+        if(datacenterId > MAX_DATACENTER_ID || datacenterId < 0) throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", MAX_DATACENTER_ID));
+
+        log.info("engine starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, workerid {}",
+                TIMESTAMP_LEFT_SHIFT, DATACENTER_ID_BITS, WORKER_ID_BITS, SEQUENCE_BITS, workerId);
     }
 
+    public boolean validUserService(String serviceName){
+        if(serviceName == null) return false;
+        return AGENT_PATTERN.matcher(serviceName).matches();
+    }
 
-    // logic
+    public long get_id(String serviceName){
+        if(!validUserService(serviceName)){
+            // metrics logs goes here for now we keep this way
+            throw new InvalidUserServiceError();
+        }
+
+        // sending audit longs to Kafka topics
+
+        return nextId();
+    }
+
+    public long get_worker_id(){ return workerId; }
+
+    public long get_datacenter_id() { return datacenterId; }
+
+    public long get_timestamp() { return System.currentTimeMillis(); }
+
+
+    public synchronized long nextId(){
+
+        long timestamp = timeGen();
+
+        if(timestamp < lastTimestamp){
+            // incrementation exceptions goes here
+            log.info("clock is moving backword. Rejecting request until {}", timestamp);
+            throw new InvalidSystemClockException(
+                    String.format("Clock moved backwards. Refusing to generate id for %d milliseconds", lastTimestamp - timestamp)
+            );
+        }
+
+        if(lastTimestamp == timestamp){
+            sequence = (sequence + 1) & SEQUENCE_MASK;
+            if (sequence == 0){
+                timestamp = tillNextMillis(lastTimestamp);
+            }
+        }else {
+            sequence = 0L;
+        }
+
+        lastTimestamp = timestamp;
+
+
+        return ((timestamp - TWITTER_EPOCH) << TIMESTAMP_LEFT_SHIFT) |
+                (datacenterId << DATACENTER_ID_SHIFT) |
+                (workerId << WORKER_ID_SHIFT) |
+                sequence;
+
+    }
+
+    protected long tillNextMillis(long lastTimestamp){
+        long timestamp = timeGen();
+        while (timestamp <= lastTimestamp){
+            timestamp = timeGen();
+        }
+        return timestamp;
+    }
+
+    protected long timeGen() { return System.currentTimeMillis(); }
 }
