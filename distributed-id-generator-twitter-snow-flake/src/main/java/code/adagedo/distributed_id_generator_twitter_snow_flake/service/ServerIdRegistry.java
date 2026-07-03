@@ -2,8 +2,6 @@ package code.adagedo.distributed_id_generator_twitter_snow_flake.service;
 
 public interface ServerIdRegistry {
 
-    void register();
+    long createDatacenterId(String datacenterName);
     long createServerId(String serverName);
-
-    void renewLease();
 }

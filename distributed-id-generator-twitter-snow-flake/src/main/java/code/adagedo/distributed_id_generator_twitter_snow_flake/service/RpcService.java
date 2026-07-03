@@ -16,23 +16,18 @@ import org.springframework.grpc.server.service.GrpcService;
 public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
 
     private final RedisServerIdRegistry redisServerIdRegistry;
-
     public void generateId(ServerInfoRequest request, StreamObserver<code.adagedo.commonproto.ServerResponse> observer){
 
         try{
-            String serverName = request.getServerName();
-
-            long datacenterId = redisServerIdRegistry.getDatacenterId();
-            long serverId = redisServerIdRegistry.createServerId(serverName);
+            long datacenterId = redisServerIdRegistry.createDatacenterId(request.getDatacenterName());
+            long serverId = redisServerIdRegistry.createServerId(request.getServerName());
             IdGeneratorEngine engine = new IdGeneratorEngine(datacenterId, serverId);
-
             long snowFlakeId = engine.nextId();
-
             ServerResponse response = ServerResponse.newBuilder().setSnowFlakeId(snowFlakeId).build();
             observer.onNext(response);
             observer.onCompleted();
         }catch (Exception exception){
-            log.error("failed to send rpc response to {}", request.getServerName());
+            log.error("failed to send rpc response to server name{} and datacenter name, {}", request.getServerName(), request.getDatacenterName());
             observer.onError(io.grpc.Status.INTERNAL.withDescription(exception.getCause().getMessage()).asRuntimeException());
         }
     }

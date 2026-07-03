@@ -9,6 +9,7 @@ option java_outer_classname = "ComputeIdProto";
 
 
 message ServerInfoRequest {
+  string datacenterName =1;
   string serverName = 2;
 }
 
