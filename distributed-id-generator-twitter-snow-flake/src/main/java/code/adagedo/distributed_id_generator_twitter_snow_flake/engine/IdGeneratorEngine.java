@@ -35,8 +35,8 @@ public class IdGeneratorEngine {
     private long lastTimestamp = -1L;
 
 
-    public IdGeneratorEngine(long servverId, long datacenterId){
-        this(servverId, datacenterId,0L);
+    public IdGeneratorEngine(long serverId, long datacenterId){
+        this(serverId, datacenterId,0L);
     }
 
     public IdGeneratorEngine(long serverId, long datacenterId, long sequence){
@@ -49,7 +49,7 @@ public class IdGeneratorEngine {
 
         if(datacenterId > MAX_DATACENTER_ID || datacenterId < 0) throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", MAX_DATACENTER_ID));
 
-        log.info("engine starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, workerid {}",
+        log.info("engine starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, serverId {}",
                 TIMESTAMP_LEFT_SHIFT, DATACENTER_ID_BITS, WORKER_ID_BITS, SEQUENCE_BITS, serverId);
     }
 
