@@ -61,7 +61,7 @@ public class IdGeneratorEngine {
     public long get_id(String serviceName){
         if(!validUserService(serviceName)){
             // metrics logs goes here for now we keep this way
-            throw new InvalidUserServiceError();
+            throw new InvalidUserServiceError("invalid service name");
         }
 
         // sending audit longs to Kafka topics
