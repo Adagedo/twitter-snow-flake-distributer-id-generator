@@ -2,13 +2,10 @@ package code.adagedo.distributed_id_generator_twitter_snow_flake.engine;
 
 import code.adagedo.distributed_id_generator_twitter_snow_flake.audit.AuditLogEntry;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidSystemClockException;
-import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidUserServiceError;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEventProducer;
-import jakarta.annotation.PostConstruct;
-import lombok.Data;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Random;
 import java.util.regex.Pattern;
