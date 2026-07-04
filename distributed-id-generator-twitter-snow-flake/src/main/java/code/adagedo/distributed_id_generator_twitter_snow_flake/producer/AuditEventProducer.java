@@ -22,24 +22,18 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 @Slf4j
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class AuditEventProducer {
 
     @Value("${spring.kafka.topic}")
     private String topic;
 
-    @Autowired
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     private final ObjectMapper objectMapper;
 
     public static final String HEADER_EVENT_SOURCE = "event-source";
     public static final String SOURCE_SCANNER = "scanner";
-
-    public AuditEventProducer(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
-        this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
-    }
 
     public void publishEvent(AuditLogEntry logEntry){
         String key = buildKey(logEntry);

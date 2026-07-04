@@ -29,10 +29,6 @@ public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
 
             IdGeneratorEngine engine = new IdGeneratorEngine(serverId, datacenterId, request.getServerName(), request.getDatacenterName(), auditEventProducer);
 
-            System.out.println("servername" + request.getServerName());
-            System.out.println("dcname" + request.getDatacenterName());
-
-
             long snowFlakeId = engine.nextId();
 
             engine.publishAudit(snowFlakeId); // sending audits logs to Kafka topic
