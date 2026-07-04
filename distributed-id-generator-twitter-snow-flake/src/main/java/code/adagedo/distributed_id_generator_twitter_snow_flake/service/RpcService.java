@@ -31,7 +31,7 @@ public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
 
             long snowFlakeId = engine.nextId();
 
-            engine.publishAudit(snowFlakeId); // sending audits logs to Kafka topic
+            engine.publishAudit(snowFlakeId);
 
             ServerResponse response = ServerResponse.newBuilder().setSnowFlakeId(snowFlakeId).build();
 

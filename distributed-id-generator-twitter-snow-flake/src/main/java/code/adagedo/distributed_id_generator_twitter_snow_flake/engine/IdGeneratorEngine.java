@@ -6,8 +6,6 @@ import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEv
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Random;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -33,8 +31,6 @@ public class IdGeneratorEngine {
 
     private final long serverId;
     private final long datacenterId;
-    private final Random rand;
-
     private final String serverName;
     private final String datacenterName;
 
@@ -51,7 +47,6 @@ public class IdGeneratorEngine {
         this.datacenterId = datacenterId;
         this.serverName = serverName;
         this.datacenterName = datacenterName;
-        this.rand = new Random();
         this.auditEventProducer = auditEventProducer;
         this.sequence = sequence;
 
