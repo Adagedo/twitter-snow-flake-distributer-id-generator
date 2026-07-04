@@ -14,7 +14,7 @@ public class GrpcClientService {
 
     public long getSnowFlakeId() {
         ServerInfoRequest request = ServerInfoRequest.newBuilder()
-                .setDatacenterName("my datacenter").setServerName("my server").build();
+                .setDatacenterName("us-east").setServerName("server-one").build();
         ServerResponse response = blockingStub.generateId(request);
         System.out.println(response.getSnowFlakeId());
         return response.getSnowFlakeId();
