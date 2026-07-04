@@ -1,6 +1,11 @@
 spring:
+  profiles:
+    active: local
   application:
     name: distributed-id-generator-twitter-snow-flake
+  config:
+    activate:
+      on-profile: local
   data:
     redis:
       host:  127.0.0.1
@@ -12,7 +17,14 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: -1ms
-
+  kafka:
+    topic: audit-logs-events
+    bootstrap-servers: localhost:9092,localhost:9094,localhost:9095
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        retries: 3
 
 server:
   port: 8090

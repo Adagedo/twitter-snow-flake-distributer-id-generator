@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 public class AuditLogEntry {
 
-    private final long id;
-    private final String serverName;
-    private final String datacenterName;
-    private final long timestamp;
-    private final long randomTag;
+    private  long snowFlakeId;
+    private  String serverName;
+    private  String datacenterName;
+    private long serverId;
+    private long datacenterId;
+    private  long timestamp;
 }

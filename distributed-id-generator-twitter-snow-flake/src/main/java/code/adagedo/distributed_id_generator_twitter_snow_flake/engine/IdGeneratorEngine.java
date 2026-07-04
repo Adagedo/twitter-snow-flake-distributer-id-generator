@@ -1,16 +1,20 @@
 package code.adagedo.distributed_id_generator_twitter_snow_flake.engine;
 
+import code.adagedo.distributed_id_generator_twitter_snow_flake.audit.AuditLogEntry;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidSystemClockException;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidUserServiceError;
+import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEventProducer;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Random;
 import java.util.regex.Pattern;
 
-@Data
 @Slf4j
+@RequiredArgsConstructor
 public class IdGeneratorEngine {
 
     private static final long TWITTER_EPOCH = 1288834974657L;
@@ -28,6 +32,8 @@ public class IdGeneratorEngine {
 
     private static final Pattern AGENT_PATTERN = Pattern.compile("^([a-zA-Z][a-zA-Z\\-0-9]*)$");
 
+    private final AuditEventProducer auditEventProducer;
+
     private final long serverId;
     private final long datacenterId;
     private final Random rand;
@@ -39,16 +45,17 @@ public class IdGeneratorEngine {
     private long lastTimestamp = -1L;
 
 
-    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName){
-        this(serverId, datacenterId, datacenterName, serverName,0L);
+    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, AuditEventProducer auditEventProducer){
+        this(serverId, datacenterId, serverName, datacenterName,0L,  auditEventProducer);
     }
 
-    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, long sequence){
+    public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, long sequence, AuditEventProducer auditEventProducer){
         this.serverId = serverId;
         this.datacenterId = datacenterId;
         this.serverName = serverName;
         this.datacenterName = datacenterName;
         this.rand = new Random();
+        this.auditEventProducer = auditEventProducer;
         this.sequence = sequence;
 
         if(serverId > MAX_WORKER_ID || serverId < 0) throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
@@ -64,16 +71,23 @@ public class IdGeneratorEngine {
         return AGENT_PATTERN.matcher(serverName).matches() && AGENT_PATTERN.matcher(datacenterName).matches();
     }
 
-    public void publishAudit(){
-        // logic
+    public void publishAudit(long id){
+
+        AuditLogEntry logEntry = new AuditLogEntry();
+        logEntry.setDatacenterId(get_datacenter_id());
+        logEntry.setTimestamp(get_timestamp());
+        logEntry.setSnowFlakeId(id);
+        logEntry.setServerId(get_server_id());
+        logEntry.setDatacenterName(datacenterName);
+        logEntry.setServerName(serverName);
+        auditEventProducer.publishEvent(logEntry);
     }
 
-    public long get_server_id(){ return serverId; }
+    private long get_server_id(){ return serverId; }
 
-    public long get_datacenter_id() { return datacenterId; }
+    private long get_datacenter_id() { return datacenterId; }
 
-    public long get_timestamp() { return System.currentTimeMillis(); }
-
+    private long get_timestamp() { return System.currentTimeMillis(); }
 
     public synchronized long nextId(){
 
