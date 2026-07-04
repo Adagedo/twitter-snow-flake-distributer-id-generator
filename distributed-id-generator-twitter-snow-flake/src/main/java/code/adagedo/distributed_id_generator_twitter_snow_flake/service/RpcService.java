@@ -30,7 +30,7 @@ public class RpcService extends ComputeIdGrpc.ComputeIdImplBase {
         }catch (Exception exception){
             log.info(exception.getMessage());
             log.error("failed to send rpc response to server name{} and datacenter name, {}", request.getServerName(), request.getDatacenterName());
-            observer.onError(io.grpc.Status.INTERNAL.withDescription(exception.getCause().getMessage()).asRuntimeException());
+//            observer.onError(io.grpc.Status.INTERNAL.withDescription(exception.getCause().getMessage()).asRuntimeException());
         }
     }
 }
