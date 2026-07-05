@@ -2,15 +2,14 @@ spring:
   application:
     name: server
 
-  config:
-    import: optional:file:.env[.properties]
+#  config:
+#    import: optional:file:.env[.properties]
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/testdb
+    username: root
+    password:  Adagedo@#$%1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     open-in-view: false
     hibernate:

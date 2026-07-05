@@ -43,6 +43,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
             <groupId>code.adagedo</groupId>
             <artifactId>common-proto</artifactId>
             <version>0.0.1-SNAPSHOT</version>
