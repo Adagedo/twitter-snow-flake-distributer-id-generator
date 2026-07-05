@@ -13,7 +13,7 @@ public class GrpcClientService {
     private final ComputeIdGrpc.ComputeIdBlockingStub blockingStub;
 
     public long getSnowFlakeId(){
-        ServerInfoRequest request = ServerInfoRequest.newBuilder().setDatacenterName("user-east").setServerName("server-two").build();
+        ServerInfoRequest request = ServerInfoRequest.newBuilder().setDatacenterName("us-central").setServerName("server-two").build();
         ServerResponse response = blockingStub.generateId(request);
         return response.getSnowFlakeId();
     }
