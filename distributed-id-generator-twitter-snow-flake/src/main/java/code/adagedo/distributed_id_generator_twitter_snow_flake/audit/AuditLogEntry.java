@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -14,5 +16,5 @@ public class AuditLogEntry {
     private  String datacenterName;
     private long serverId;
     private long datacenterId;
-    private  long timestamp;
+    private LocalDateTime timestamp;
 }

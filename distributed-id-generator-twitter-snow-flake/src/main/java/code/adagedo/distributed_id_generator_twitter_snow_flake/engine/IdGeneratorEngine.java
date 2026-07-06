@@ -6,6 +6,8 @@ import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEv
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
@@ -78,7 +80,7 @@ public class IdGeneratorEngine {
 
     private long get_datacenter_id() { return datacenterId; }
 
-    private long get_timestamp() { return System.currentTimeMillis(); }
+    private LocalDateTime get_timestamp() { return LocalDateTime.now(); }
 
     public long nextId(){
 
