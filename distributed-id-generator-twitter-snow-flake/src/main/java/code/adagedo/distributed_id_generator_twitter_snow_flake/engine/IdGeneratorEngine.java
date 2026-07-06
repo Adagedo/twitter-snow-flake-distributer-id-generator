@@ -6,6 +6,7 @@ import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEv
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -34,12 +35,10 @@ public class IdGeneratorEngine {
     private final String serverName;
     private final String datacenterName;
 
-    private long sequence;
-    private long lastTimestamp = -1L;
-
+    private final AtomicLong state;
 
     public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, AuditEventProducer auditEventProducer){
-        this(serverId, datacenterId, serverName, datacenterName,0L,  auditEventProducer);
+        this(serverId, datacenterId, serverName, datacenterName, 0L, auditEventProducer);
     }
 
     public IdGeneratorEngine(long serverId, long datacenterId, String serverName, String datacenterName, long sequence, AuditEventProducer auditEventProducer){
@@ -48,7 +47,7 @@ public class IdGeneratorEngine {
         this.serverName = serverName;
         this.datacenterName = datacenterName;
         this.auditEventProducer = auditEventProducer;
-        this.sequence = sequence;
+        this.state = new AtomicLong((-1L << SEQUENCE_BITS) | (sequence & SEQUENCE_MASK));
 
         if(serverId > MAX_WORKER_ID || serverId < 0) throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", MAX_WORKER_ID));
 
@@ -81,34 +80,41 @@ public class IdGeneratorEngine {
 
     private long get_timestamp() { return System.currentTimeMillis(); }
 
-    public synchronized long nextId(){
+    public long nextId(){
 
-        long timestamp = timeGen();
+        while (true) {
+            long prev = state.get();
+            long lastTimestamp = prev >> SEQUENCE_BITS;
+            long lastSequence = prev & SEQUENCE_MASK;
 
-        if(timestamp < lastTimestamp){
-            // incrementation exceptions goes here
-            log.info("clock is moving backword. Rejecting request until {}", timestamp);
-            throw new InvalidSystemClockException(
-                    String.format("Clock moved backwards. Refusing to generate id for %d milliseconds", lastTimestamp - timestamp)
-            );
-        }
+            long timestamp = timeGen();
 
-        if(lastTimestamp == timestamp){
-            sequence = (sequence + 1) & SEQUENCE_MASK;
-            if (sequence == 0){
-                timestamp = tillNextMillis(lastTimestamp);
+            if (timestamp < lastTimestamp) {
+                log.info("clock is moving backword. Rejecting request until {}", timestamp);
+                throw new InvalidSystemClockException(
+                        String.format("Clock moved backwards. Refusing to generate id for %d milliseconds", lastTimestamp - timestamp)
+                );
             }
-        }else {
-            sequence = 0L;
+
+            long sequence;
+            if (lastTimestamp == timestamp) {
+                sequence = (lastSequence + 1) & SEQUENCE_MASK;
+                if (sequence == 0) {
+                    timestamp = tillNextMillis(lastTimestamp);
+                }
+            } else {
+                sequence = 0L;
+            }
+
+            long next = (timestamp << SEQUENCE_BITS) | sequence;
+
+            if (state.compareAndSet(prev, next)) {
+                return ((timestamp - TWITTER_EPOCH) << TIMESTAMP_LEFT_SHIFT) |
+                        (datacenterId << DATACENTER_ID_SHIFT) |
+                        (serverId << WORKER_ID_SHIFT) |
+                        sequence;
+            }
         }
-
-        lastTimestamp = timestamp;
-
-
-        return ((timestamp - TWITTER_EPOCH) << TIMESTAMP_LEFT_SHIFT) |
-                (datacenterId << DATACENTER_ID_SHIFT) |
-                (serverId << WORKER_ID_SHIFT) |
-                sequence;
     }
 
     protected long tillNextMillis(long lastTimestamp){
