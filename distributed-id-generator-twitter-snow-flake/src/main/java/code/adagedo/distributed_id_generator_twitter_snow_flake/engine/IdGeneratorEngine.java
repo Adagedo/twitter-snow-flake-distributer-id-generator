@@ -4,7 +4,6 @@ import code.adagedo.distributed_id_generator_twitter_snow_flake.audit.AuditLogEn
 import code.adagedo.distributed_id_generator_twitter_snow_flake.exceptions.InvalidSystemClockException;
 import code.adagedo.distributed_id_generator_twitter_snow_flake.producer.AuditEventProducer;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 @Slf4j
-@RequiredArgsConstructor
 public class IdGeneratorEngine {
 
     private static final long TWITTER_EPOCH = 1288834974657L;
